@@ -84,7 +84,7 @@ Function Encode-String()
     }
     End
     {
-        $oneStr = $list -join '';
+        $oneStr = [string]::Join([System.Environment]::NewLine, $list);
         [byte[]]$bytes = $RealEncoder.GetBytes($oneStr);
         $outStr = [System.Convert]::ToBase64String($bytes);
         Write-Output -InputObject $outStr;
@@ -115,6 +115,12 @@ Function Convert-Object()
         elseif ($InputObject -is [System.ValueType])
         {
             $list.Add([System.Convert]::ToString($InputObject));
+        }
+        elseif ($InputObject -is [scriptblock])
+        {
+            $oneLine = $InputObject.ToString();
+            [string[]]$allLines = $oneLine.Split([System.Environment]::NewLine, [System.StringSplitOptions]::RemoveEmptyEntries);
+            $list.AddRange($allLines);
         }
         else
         {
